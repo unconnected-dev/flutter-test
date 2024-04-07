@@ -1,0 +1,175 @@
+{"frames": {
+
+"kingWin1":
+{
+	"frame": {"x":496,"y":388,"w":172,"h":194},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":64,"y":54,"w":172,"h":194},
+	"sourceSize": {"w":300,"h":300}
+},
+"kingWin2":
+{
+	"frame": {"x":672,"y":406,"w":172,"h":194},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":64,"y":54,"w":172,"h":194},
+	"sourceSize": {"w":300,"h":300}
+},
+"kingWin3":
+{
+	"frame": {"x":496,"y":586,"w":172,"h":194},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":64,"y":54,"w":172,"h":194},
+	"sourceSize": {"w":300,"h":300}
+},
+"kingWin4":
+{
+	"frame": {"x":672,"y":582,"w":172,"h":194},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":64,"y":54,"w":172,"h":194},
+	"sourceSize": {"w":300,"h":300}
+},
+"kingWin5":
+{
+	"frame": {"x":566,"y":784,"w":172,"h":194},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":64,"y":54,"w":172,"h":194},
+	"sourceSize": {"w":300,"h":300}
+},
+"kingWin6":
+{
+	"frame": {"x":742,"y":780,"w":172,"h":194},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":64,"y":54,"w":172,"h":194},
+	"sourceSize": {"w":300,"h":300}
+},
+"kingWin7":
+{
+	"frame": {"x":562,"y":210,"w":174,"h":196},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":66,"y":54,"w":174,"h":196},
+	"sourceSize": {"w":300,"h":300}
+},
+"kingWin8":
+{
+	"frame": {"x":290,"y":496,"w":182,"h":202},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":62,"y":50,"w":182,"h":202},
+	"sourceSize": {"w":300,"h":300}
+},
+"kingWin9":
+{
+	"frame": {"x":290,"y":290,"w":202,"h":202},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":52,"y":50,"w":202,"h":202},
+	"sourceSize": {"w":300,"h":300}
+},
+"kingWin10":
+{
+	"frame": {"x":2,"y":2,"w":284,"h":284},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":12,"y":10,"w":284,"h":284},
+	"sourceSize": {"w":300,"h":300}
+},
+"kingWin11":
+{
+	"frame": {"x":290,"y":2,"w":268,"h":284},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":18,"y":12,"w":268,"h":284},
+	"sourceSize": {"w":300,"h":300}
+},
+"kingWin12":
+{
+	"frame": {"x":2,"y":290,"w":284,"h":282},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":12,"y":10,"w":284,"h":282},
+	"sourceSize": {"w":300,"h":300}
+},
+"kingWin13":
+{
+	"frame": {"x":2,"y":576,"w":266,"h":282},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":20,"y":4,"w":266,"h":282},
+	"sourceSize": {"w":300,"h":300}
+},
+"kingWin14":
+{
+	"frame": {"x":388,"y":864,"w":174,"h":198},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":58,"y":52,"w":174,"h":198},
+	"sourceSize": {"w":300,"h":300}
+},
+"kingWin15":
+{
+	"frame": {"x":762,"y":208,"w":174,"h":194},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":62,"y":54,"w":174,"h":194},
+	"sourceSize": {"w":300,"h":300}
+},
+"kingWin16":
+{
+	"frame": {"x":208,"y":864,"w":176,"h":198},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":64,"y":52,"w":176,"h":198},
+	"sourceSize": {"w":300,"h":300}
+},
+"kingWin17":
+{
+	"frame": {"x":2,"y":862,"w":182,"h":202},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":62,"y":50,"w":182,"h":202},
+	"sourceSize": {"w":300,"h":300}
+},
+"kingWin18":
+{
+	"frame": {"x":562,"y":2,"w":186,"h":204},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":60,"y":50,"w":186,"h":204},
+	"sourceSize": {"w":300,"h":300}
+},
+"kingWin19":
+{
+	"frame": {"x":752,"y":2,"w":182,"h":202},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":62,"y":50,"w":182,"h":202},
+	"sourceSize": {"w":300,"h":300}
+},
+"kingWin20":
+{
+	"frame": {"x":272,"y":682,"w":178,"h":198},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":64,"y":52,"w":178,"h":198},
+	"sourceSize": {"w":300,"h":300}
+}},
+"animations": {
+	"kingWin": ["kingWin1","kingWin2","kingWin3","kingWin4","kingWin5","kingWin6","kingWin7","kingWin8","kingWin9","kingWin10","kingWin11","kingWin12","kingWin13","kingWin14","kingWin15","kingWin16","kingWin17","kingWin18","kingWin19","kingWin20"]
+},
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "kingWin0_opt.png",
+	"format": "RGBA8888",
+	"size": {"w":938,"h":1064},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:ed6b7ce71a63b2d41785c0a1c8c3fc06:0e6c9bc16d8748ea44183e965df5f977:24ec870079ab1c39e414a096571a2124$"
+}
+}
