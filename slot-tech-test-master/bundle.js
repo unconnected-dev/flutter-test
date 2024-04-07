@@ -12180,7 +12180,7 @@ void main(void)
      */
     run(options) {
       const { renderer } = this;
-      renderer.runners.init.emit(renderer.options), options.hello && console.log(`PixiJS 7.4.0 - ${renderer.rendererLogId} - https://pixijs.com`), renderer.resize(renderer.screen.width, renderer.screen.height);
+      renderer.runners.init.emit(renderer.options), options.hello && console.log(`PixiJS 7.4.2 - ${renderer.rendererLogId} - https://pixijs.com`), renderer.resize(renderer.screen.width, renderer.screen.height);
     }
     destroy() {
     }
@@ -14710,7 +14710,7 @@ void main(void)
     }
   }
 
-  const VERSION = "7.4.0";
+  const VERSION = "7.4.2";
 
   class Bounds {
     constructor() {
@@ -19752,9 +19752,9 @@ ${e}`);
 })();
 `;
   let WORKER_URL$1 = null;
-  let WorkerInstance$1 = class WorkerInstance extends Worker {
+  let WorkerInstance$1 = class WorkerInstance {
     constructor() {
-      WORKER_URL$1 || (WORKER_URL$1 = URL.createObjectURL(new Blob([WORKER_CODE$1], { type: "application/javascript" }))), super(WORKER_URL$1);
+      WORKER_URL$1 || (WORKER_URL$1 = URL.createObjectURL(new Blob([WORKER_CODE$1], { type: "application/javascript" }))), this.worker = new Worker(WORKER_URL$1);
     }
   };
   WorkerInstance$1.revokeObjectURL = function() {
@@ -19789,9 +19789,9 @@ ${e}`);
 })();
 `;
   let WORKER_URL = null;
-  class WorkerInstance extends Worker {
+  class WorkerInstance {
     constructor() {
-      WORKER_URL || (WORKER_URL = URL.createObjectURL(new Blob([WORKER_CODE], { type: "application/javascript" }))), super(WORKER_URL);
+      WORKER_URL || (WORKER_URL = URL.createObjectURL(new Blob([WORKER_CODE], { type: "application/javascript" }))), this.worker = new Worker(WORKER_URL);
     }
   }
   WorkerInstance.revokeObjectURL = function() {
@@ -19805,7 +19805,7 @@ ${e}`);
     }
     isImageBitmapSupported() {
       return this._isImageBitmapSupported !== void 0 ? this._isImageBitmapSupported : (this._isImageBitmapSupported = new Promise((resolve) => {
-        const worker = new WorkerInstance$1();
+        const { worker } = new WorkerInstance$1();
         worker.addEventListener("message", (event) => {
           worker.terminate(), WorkerInstance$1.revokeObjectURL(), resolve(event.data);
         });
@@ -19820,7 +19820,7 @@ ${e}`);
     getWorker() {
       MAX_WORKERS === void 0 && (MAX_WORKERS = navigator.hardwareConcurrency || 4);
       let worker = this.workerPool.pop();
-      return !worker && this._createdWorkers < MAX_WORKERS && (this._createdWorkers++, worker = new WorkerInstance(), worker.addEventListener("message", (event) => {
+      return !worker && this._createdWorkers < MAX_WORKERS && (this._createdWorkers++, worker = new WorkerInstance().worker, worker.addEventListener("message", (event) => {
         this.complete(event.data), this.returnWorker(event.target), this.next();
       })), worker;
     }
@@ -20371,7 +20371,7 @@ Please use Assets.add({ alias, src, data, format, loadParser }) instead.`), asse
     }
     buildResolvedAsset(formattedAsset, data) {
       const { aliases, data: assetData, loadParser, format } = data;
-      return (this._basePath || this._rootPath) && (formattedAsset.src = path.toAbsolute(formattedAsset.src, this._basePath, this._rootPath)), formattedAsset.alias = aliases ?? formattedAsset.alias ?? [formattedAsset.src], formattedAsset.src = this._appendDefaultSearchParams(formattedAsset.src), formattedAsset.data = { ...assetData || {}, ...formattedAsset.data }, formattedAsset.loadParser = loadParser ?? formattedAsset.loadParser, formattedAsset.format = format ?? path.extname(formattedAsset.src).slice(1), formattedAsset.srcs = formattedAsset.src, formattedAsset.name = formattedAsset.alias, formattedAsset;
+      return (this._basePath || this._rootPath) && (formattedAsset.src = path.toAbsolute(formattedAsset.src, this._basePath, this._rootPath)), formattedAsset.alias = aliases ?? formattedAsset.alias ?? [formattedAsset.src], formattedAsset.src = this._appendDefaultSearchParams(formattedAsset.src), formattedAsset.data = { ...assetData || {}, ...formattedAsset.data }, formattedAsset.loadParser = loadParser ?? formattedAsset.loadParser, formattedAsset.format = format ?? formattedAsset.format ?? path.extname(formattedAsset.src).slice(1), formattedAsset.srcs = formattedAsset.src, formattedAsset.name = formattedAsset.alias, formattedAsset;
     }
   }
 
@@ -20872,15 +20872,15 @@ Please use Assets.add({ alias, src, data, format, loadParser }) instead.`), asse
   let storedGl, extensions;
   function getCompressedTextureExtensions() {
     extensions = {
+      bptc: storedGl.getExtension("EXT_texture_compression_bptc"),
+      astc: storedGl.getExtension("WEBGL_compressed_texture_astc"),
+      etc: storedGl.getExtension("WEBGL_compressed_texture_etc"),
       s3tc: storedGl.getExtension("WEBGL_compressed_texture_s3tc"),
       s3tc_sRGB: storedGl.getExtension("WEBGL_compressed_texture_s3tc_srgb"),
       /* eslint-disable-line camelcase */
-      etc: storedGl.getExtension("WEBGL_compressed_texture_etc"),
-      etc1: storedGl.getExtension("WEBGL_compressed_texture_etc1"),
       pvrtc: storedGl.getExtension("WEBGL_compressed_texture_pvrtc") || storedGl.getExtension("WEBKIT_WEBGL_compressed_texture_pvrtc"),
-      atc: storedGl.getExtension("WEBGL_compressed_texture_atc"),
-      astc: storedGl.getExtension("WEBGL_compressed_texture_astc"),
-      bptc: storedGl.getExtension("EXT_texture_compression_bptc")
+      etc1: storedGl.getExtension("WEBGL_compressed_texture_etc1"),
+      atc: storedGl.getExtension("WEBGL_compressed_texture_atc")
     };
   }
   const detectCompressedTextures = {
@@ -21345,29 +21345,20 @@ Please use Assets.add({ alias, src, data, format, loadParser }) instead.`), asse
   };
   extensions$1.add(loadKTX);
 
-  const resolveCompressedTextureUrl = {
+  const knownFormats = ["s3tc", "s3tc_sRGB", "etc", "etc1", "pvrtc", "atc", "astc", "bptc"], resolveCompressedTextureUrl = {
     extension: ExtensionType.ResolveParser,
     test: (value) => {
       const extension = path.extname(value).slice(1);
       return ["basis", "ktx", "dds"].includes(extension);
     },
     parse: (value) => {
-      const extension = path.extname(value).slice(1);
-      if (extension === "ktx") {
-        const extensions2 = [
-          ".s3tc.ktx",
-          ".s3tc_sRGB.ktx",
-          ".etc.ktx",
-          ".etc1.ktx",
-          ".pvrt.ktx",
-          ".atc.ktx",
-          ".astc.ktx",
-          ".bptc.ktx"
-        ];
-        if (extensions2.some((ext) => value.endsWith(ext)))
+      const parts = value.split("."), extension = parts.pop();
+      if (["ktx", "dds"].includes(extension)) {
+        const textureFormat = parts.pop();
+        if (knownFormats.includes(textureFormat))
           return {
             resolution: parseFloat(settings.RETINA_PREFIX.exec(value)?.[1] ?? "1"),
-            format: extensions2.find((ext) => value.endsWith(ext)),
+            format: textureFormat,
             src: value
           };
       }
@@ -26013,7 +26004,21 @@ void main(void)
   _Spritesheet.BATCH_SIZE = 1e3;
   let Spritesheet = _Spritesheet;
 
-  const validImages = ["jpg", "png", "jpeg", "avif", "webp"];
+  const validImages = [
+    "jpg",
+    "png",
+    "jpeg",
+    "avif",
+    "webp",
+    "s3tc",
+    "s3tc_sRGB",
+    "etc",
+    "etc1",
+    "pvrtc",
+    "atc",
+    "astc",
+    "bptc"
+  ];
   function getCacheableAssets(keys, asset, ignoreMultiPack) {
     const out = {};
     if (keys.forEach((key) => {

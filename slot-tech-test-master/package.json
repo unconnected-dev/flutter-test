@@ -8,9 +8,6 @@
         "build": "rollup -c",
         "doc": "jsdoc -c jsdoc.config.json"
     },
-    "publishConfig": {
-        "registry": "https://npm.core-gaming.io"
-    },
     "source": true,
     "browserslist": [
         "last 2 versions",
