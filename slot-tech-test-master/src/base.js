@@ -8,7 +8,7 @@ export class Base {
      * 
      */
     constructor() {
-        
+        this._native = null;
     }    
 
     /**
@@ -31,6 +31,22 @@ export class Base {
     }
     set y(y) {
         this._native.y = y;
+    }
+
+    /**
+     * get the scale x parameter on the native pixi object
+     * @member
+     */
+    get scaleX(){
+        return this._native.scale._x;
+    }
+    
+    /**
+     * get the scale y parameter on the native pixi object
+     * @member
+     */
+    get scaleY(){
+        return this._native.scale._y;
     }
 
     /**

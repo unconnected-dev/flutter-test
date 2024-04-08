@@ -10,7 +10,6 @@ import { renderer } from "../renderer.js";
  */
 export class Reel extends Base {
     /**
-     * 
      * @param {number} numberOfSymbols - number of symbols in view on the reel
      * @param {number} symbolHeight - height of each symbol
      */
@@ -26,7 +25,6 @@ export class Reel extends Base {
 
     /**
      * Start the reels spinning
-     * 
      * @async
      */
     async startSpin() {
@@ -42,7 +40,6 @@ export class Reel extends Base {
 
     /**
      * Start stopping the reel from spinning
-     * 
      * @async
      */
     async stopSpin() {
@@ -54,7 +51,6 @@ export class Reel extends Base {
 
     /**
      * Tween reels to the final position and respone promise from stopSpin()
-     * 
      * @async
      */
     async stop() {
@@ -76,7 +72,6 @@ export class Reel extends Base {
 
     /**
      * Create the reel using PIXI container and initial symbols
-     * 
      * @private
      */
     _create() {
@@ -95,7 +90,6 @@ export class Reel extends Base {
 
     /**
      * create the next symbol to spin through te appature either random or a specific id
-     * 
      * @param {number} [symbolId=null] - Symbol id to generate
      * @private
      */
@@ -108,7 +102,6 @@ export class Reel extends Base {
 
     /**
      * Update called each frame
-     * 
      * @async
      * @private 
      */

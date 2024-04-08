@@ -36188,7 +36188,7 @@ void main(void)\r
        * 
        */
       constructor() {
-          
+          this._native = null;
       }    
 
       /**
@@ -36214,6 +36214,22 @@ void main(void)\r
       }
 
       /**
+       * get the scale x parameter on the native pixi object
+       * @member
+       */
+      get scaleX(){
+          return this._native.scale._x;
+      }
+      
+      /**
+       * get the scale y parameter on the native pixi object
+       * @member
+       */
+      get scaleY(){
+          return this._native.scale._y;
+      }
+
+      /**
        * get the base pixi object
        * @member
        * @readonly
@@ -36225,13 +36241,11 @@ void main(void)\r
 
   /**
    * Symbol 
-   * 
    * @class
    * @extends Base
    */
   let Symbol$1 = class Symbol extends Base {
       /**
-       * 
        * @param {number} id - id used for the symbols
        * @param {string} name - name of the symbol asset
        */
@@ -36242,7 +36256,6 @@ void main(void)\r
 
       /**
        * Get the id of the symbol
-       * 
        * @member
        * @readonly
        */
@@ -36252,7 +36265,6 @@ void main(void)\r
 
       /**
        * Play the symbol animation
-       * 
        * @param {boolean} [loop=false] - loop the animation
        */
       play(loop=false) {        
@@ -36260,16 +36272,12 @@ void main(void)\r
           this._native.play();
       }
       
-      /**
-       * Stop the symbol animation
-       */
+      //Stop the symbol animation
       stop() {
           this._native.stop();
       }
 
-      /**
-       * Reset the symbol and remove from parent object
-       */
+      //Reset the symbol and remove from parent object
       reset(){
           this._native.parent.removeChild(this._native);       
           this._native.x = 0;
@@ -36278,7 +36286,6 @@ void main(void)\r
 
       /**
        * create the Symbol using base PIXI objects and loaded animations
-       * 
        * @param {number} id - id used for the symbols
        * @param {string} name - name of the symbol asset
        * @private
@@ -36299,7 +36306,6 @@ void main(void)\r
 
   /**
    * Symbol store used to create all symbols at initialisation for use through the game
-   * 
    * @class
    */
   class SymbolStore {
@@ -36308,7 +36314,6 @@ void main(void)\r
       }
 
       /**
-       * 
        * @param {Array.<SymbolObject>} symbolIds - Array of objects to create the symbols
        * @param {number} reels - number of reels
        * @param {number} rows - number of symbols in view
@@ -36329,7 +36334,6 @@ void main(void)\r
 
       /**
        * get a random symbol from the store
-       * 
        * @returns {Symbol}
        */
       getRandomSymbol() {
@@ -36339,7 +36343,6 @@ void main(void)\r
 
       /**
        * get a specific symbol type based on id
-       * 
        * @param {number} id - id of the symbol to retrieve
        * @returns {Symbol}
        */
@@ -36352,7 +36355,6 @@ void main(void)\r
 
       /**
        * return a used symbol to the store ready for reuse
-       * 
        * @param {Symbol} symbol - symbol to return to the store
        */
       returnSymbol(symbol) {
@@ -36436,7 +36438,6 @@ void main(void)\r
    */
   class Reel extends Base {
       /**
-       * 
        * @param {number} numberOfSymbols - number of symbols in view on the reel
        * @param {number} symbolHeight - height of each symbol
        */
@@ -36452,7 +36453,6 @@ void main(void)\r
 
       /**
        * Start the reels spinning
-       * 
        * @async
        */
       async startSpin() {
@@ -36468,7 +36468,6 @@ void main(void)\r
 
       /**
        * Start stopping the reel from spinning
-       * 
        * @async
        */
       async stopSpin() {
@@ -36480,7 +36479,6 @@ void main(void)\r
 
       /**
        * Tween reels to the final position and respone promise from stopSpin()
-       * 
        * @async
        */
       async stop() {
@@ -36502,7 +36500,6 @@ void main(void)\r
 
       /**
        * Create the reel using PIXI container and initial symbols
-       * 
        * @private
        */
       _create() {
@@ -36521,7 +36518,6 @@ void main(void)\r
 
       /**
        * create the next symbol to spin through te appature either random or a specific id
-       * 
        * @param {number} [symbolId=null] - Symbol id to generate
        * @private
        */
@@ -36534,7 +36530,6 @@ void main(void)\r
 
       /**
        * Update called each frame
-       * 
        * @async
        * @private 
        */
@@ -36656,12 +36651,10 @@ void main(void)\r
 
   /**
    * Reel manager controls multipler reels 
-   * 
    * @class
    */
   class ReelManager extends Base {
       /**
-       * 
        * @param {number} numberOfReels - number of reel instanses to create
        * @param {number} symbolsPerReel - number of reels in view for each reel created
        * @param {number} reelWidth - width of each reel to position created reels correctly
@@ -36693,7 +36686,6 @@ void main(void)\r
 
       /**
        * Stop the reels spinning
-       * 
        * @async
        */
       async stopSpin() {
@@ -36714,7 +36706,6 @@ void main(void)\r
 
       /**
        * Create the reelManager using PIXI container and required reel instances
-       * 
        * @private
        */
       _create() {
@@ -36727,7 +36718,6 @@ void main(void)\r
 
       /**
        * create reel mask to hide padding (out of view) symbols
-       * 
        * @private
        */
       _createMask() {
@@ -36741,7 +36731,6 @@ void main(void)\r
 
       /**
        * Create reels
-       * 
        * @private
        */
       _createReels() {
@@ -36756,12 +36745,10 @@ void main(void)\r
 
   /**
    * Basic button class creates a sprite object and adds interaction callback
-   * 
    * @class
    */
   class Button extends Base {
       /**
-       * 
        * @param {string} image - image name or alias from assets already loaded
        * @param {function} onClick - call back function when clicked
        */
@@ -36772,7 +36759,6 @@ void main(void)\r
 
       /**
        * create the button object
-       * 
        * @param {string} image - image name or alias from assets already loaded
        * @param {function} onClick - call back function when clicked
        * @private
@@ -36789,8 +36775,223 @@ void main(void)\r
   }
 
   /**
+   * Cloud
+   * @class
+   * @extends Base
+   */
+  class Cloud extends Base {
+
+      /**
+       * @param {number}  id      - id used for the cloud
+       * @param {string}  image   - the cloud asset
+       * @param {number}  cloudX  - the x value that will be added to the cloud
+       * @param {number}  cloudY  - the y value that will be added to cloud
+       * @param {number}  speed   - the speed the cloud will move across the screen
+       * @param {number}  scale   - the scale the cloud will be set to on screen  
+       */
+      constructor(id, image, cloudX, cloudY, speed, scale){
+          super();
+          this._create(id, image, cloudX, cloudY, speed, scale);
+      }
+
+      /**
+       * Get the id of the cloud
+       * @readonly
+       */
+      get id(){
+          return this._id;
+      }
+
+      /**
+       * Create the cloud
+       * @param {number}  id      - id used for the cloud
+       * @param {string}  image   - the cloud asset
+       * @param {number}  cloudX  - x value to place cloud at
+       * @param {number}  cloudY  - y value to place cloud at
+       * @param {number}  speed   - distance to move clouds per update
+       * @param {number}  scale   - scale of the cloud, to give depth
+       * @private
+       */
+      _create(id, image, cloudX, cloudY, speed, scale){
+          this._id = id;
+          this._image = image;
+          this._cloudX = cloudX;
+          this._cloudY = cloudY;
+          this._speed = speed;
+          this._scale = scale;
+
+          this._moving = false;
+
+          this._native = Sprite.from(image);
+          
+          this.x = this.x + this._cloudX;
+          this.y = this.y + this._cloudY;
+
+          this._native.pivot.x = this._native.width/2;
+          this._native.pivot.y = this._native.height/2;
+
+          this._native.scale.set(this._scale, this._scale);
+      }
+
+      /**
+       * Update called each frame
+       * @private
+       */
+      async _update(){
+          if(!this._moving){
+              return;
+          }
+
+          this.x += (this._speed * this._scale);
+          
+          //Wrap clouds to other side of screen
+          //Based off 1920x1020 screen size
+          //Would need to do a mask
+          let bleed = 100;
+          if(this.x > 1024 + bleed + this._native.width/2){
+              this.x = 0 - bleed - this._native.width/2;
+          }
+      }
+
+      /**
+       * set the moving parameter on the cloud
+       * @member
+       */
+      get moving(){
+          return this._moving;
+      }
+
+      set moving(moving){
+          this._moving = moving;
+      }
+  }
+
+  /**
+   * Cloud manager controls multiple clouds
+   * @class
+   */
+
+  class CloudManager extends Base{
+      /**
+       * @param {number}  numberOfClouds  - number of clouds to create
+       * @param {number}  minX            - minimum x value for clouds to be placed at
+       * @param {number}  maxX            - maximum x value for the clouds to be placed at
+       * @param {number}  minY            - minimum y value for clouds to be placed at
+       * @param {number}  maxY            - maximum y value for clouds to be placed at
+       * @param {number}  minSpeed        - minimum speed for clouds to move
+       * @param {number}  maxSpeed        - maximum speed for clouds to move
+       * @param {number}  minScale        - minimum scaling for clouds
+       * @param {number}  maxScale        - maximum scaling for clouds
+       */
+      constructor(numberOfClouds, minX, maxX, minY, maxY, minSpeed, maxSpeed, minScale, maxScale){
+          super();
+          this._numberOfClouds = numberOfClouds;
+          this._minX = minX;
+          this._maxX = maxX;
+          this._minY = minY;
+          this._maxY = maxY;
+          this._minSpeed = minSpeed;
+          this._maxSpeed = maxSpeed;
+          this._minScale = minScale;
+          this._maxScale = maxScale;
+          this._clouds = [];
+          this._create();
+      }
+
+      /**
+       * Create the cloudManager using PIXI container and required cloud instances
+       * @private
+       */
+      _create(){
+          this._native = new Container("cloudManager");
+
+          this._native.x = 0;
+          this._native.y = 0;
+
+          for(let i = 0; i < this._numberOfClouds; i++){
+              const image = this._getRandomCloud();
+              const cloudX = this._getRandomCloudX();
+              const cloudY = this._getRandomCloudY();
+              const speed = this._getRandomCloudSpeed();
+              const scale = this._getRandomCloudScale();
+              const aCloud = new Cloud(i, image, cloudX, cloudY, speed, scale);
+
+              this._native.addChild(aCloud._native);
+              this._clouds.push(aCloud);
+
+              //Add to ticker for animation
+              renderer.app.ticker.add(() => {
+                  aCloud._update(renderer.app.ticker.elapsedMS);
+              });
+          }
+
+          this._enableCloudsMovement(true);
+      }
+
+      /**
+       * Activate clouds (get them moving)
+       * @param {boolean} [active=true]
+       */
+      _enableCloudsMovement(active = true){
+          for(let i = 0; i < this._clouds.length; i++){
+              this._clouds[i].moving = active;
+          }
+      }
+
+      /**
+       * get random cloud image
+       * @private
+      */
+      _getRandomCloud(){
+         const arr = ["cloud1", "cloud2"];
+         const randomIndex = Math.floor(Math.random() * arr.length);
+         return arr[randomIndex];
+      }
+   
+      /**
+       * get random x value
+       * @private
+       */
+      _getRandomCloudX(){
+          return this._getRandomInt(this._minX, this._maxX);
+      }
+
+      /**
+       * get random y value
+       * @private
+       */
+      _getRandomCloudY(){
+          return this._getRandomInt(this._minY, this._maxY);
+      }
+      
+      /**
+       * get random cloud speed
+       * @private
+       */
+     _getRandomCloudSpeed(){
+         return this._getRandomInt(this._minSpeed, this._maxSpeed); 
+      }
+      
+      /**
+       * get random cloud scale
+       * whatever whole integer is returned it is divided by 10 to keep at an appropriate scale (7 becomes 0.7)
+       * @private
+       */
+      _getRandomCloudScale(){
+          return this._getRandomInt(this._minScale, this._maxScale) / 10;
+      }
+
+      /**
+       * get random integer from between and min and max
+       * @private
+       */
+      _getRandomInt(iMin, iMax){
+          return Math.floor(Math.random() * iMax) + iMin;
+      }
+  }
+
+  /**
    * Base entry point for the game
-   * 
    * @class
    */
   class Core {
@@ -36800,7 +37001,6 @@ void main(void)\r
 
       /**
        * load all assets required for the game
-       * 
        * @async
        */
       async loadAssets() {
@@ -36824,7 +37024,6 @@ void main(void)\r
 
       /**
        * Create the renderer instance and initialise everything ready to play the game
-       * 
        * @async
        * @private
        */
@@ -36837,6 +37036,7 @@ void main(void)\r
               width: 1024,
               height: 576
           });
+          
           renderer.start();
           timerManager.init();
           await this.loadAssets();
@@ -36845,7 +37045,6 @@ void main(void)\r
 
       /**
        * Create all game objecs ready to use
-       * 
        * @async
        * @private
        */
@@ -36859,6 +37058,10 @@ void main(void)\r
 
           const background = Sprite.from("background");
           renderer.addChild(background);
+
+          //Cloud randomness can be set via manager
+          this._cloudManager = new CloudManager(4, 0, 1024, 32, 64, 1, 2, 2, 6);
+          renderer.addChild(this._cloudManager.native);
 
           symbolStore.createSymbols([
               {id: 0, name: "h2"},

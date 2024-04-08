@@ -8,7 +8,6 @@ import { Symbol } from "./symbol.js";
 
 /**
  * Symbol store used to create all symbols at initialisation for use through the game
- * 
  * @class
  */
 class SymbolStore {
@@ -17,7 +16,6 @@ class SymbolStore {
     }
 
     /**
-     * 
      * @param {Array.<SymbolObject>} symbolIds - Array of objects to create the symbols
      * @param {number} reels - number of reels
      * @param {number} rows - number of symbols in view
@@ -38,7 +36,6 @@ class SymbolStore {
 
     /**
      * get a random symbol from the store
-     * 
      * @returns {Symbol}
      */
     getRandomSymbol() {
@@ -48,7 +45,6 @@ class SymbolStore {
 
     /**
      * get a specific symbol type based on id
-     * 
      * @param {number} id - id of the symbol to retrieve
      * @returns {Symbol}
      */
@@ -61,7 +57,6 @@ class SymbolStore {
 
     /**
      * return a used symbol to the store ready for reuse
-     * 
      * @param {Symbol} symbol - symbol to return to the store
      */
     returnSymbol(symbol) {

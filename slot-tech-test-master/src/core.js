@@ -5,10 +5,10 @@ import { symbolStore } from "./reels/symbolStore.js";
 import { ReelManager } from "./reels/reelsManager.js";
 import { timerManager } from "./utils/timermanager.js";
 import { Button } from "./button.js";
+import { CloudManager } from "./background/cloudManager.js";
 
 /**
  * Base entry point for the game
- * 
  * @class
  */
 class Core {
@@ -18,7 +18,6 @@ class Core {
 
     /**
      * load all assets required for the game
-     * 
      * @async
      */
     async loadAssets() {
@@ -42,7 +41,6 @@ class Core {
 
     /**
      * Create the renderer instance and initialise everything ready to play the game
-     * 
      * @async
      * @private
      */
@@ -55,6 +53,7 @@ class Core {
             width: 1024,
             height: 576
         });
+        
         renderer.start();
         timerManager.init();
         await this.loadAssets();
@@ -63,7 +62,6 @@ class Core {
 
     /**
      * Create all game objecs ready to use
-     * 
      * @async
      * @private
      */
@@ -77,6 +75,10 @@ class Core {
 
         const background = PIXI.Sprite.from("background");
         renderer.addChild(background);
+
+        //Cloud randomness can be set via manager
+        this._cloudManager = new CloudManager(4, 0, 1024, 32, 64, 1, 2, 2, 6);
+        renderer.addChild(this._cloudManager.native);
 
         symbolStore.createSymbols([
             {id: 0, name: "h2"},

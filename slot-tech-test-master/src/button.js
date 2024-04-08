@@ -3,12 +3,10 @@ import * as PIXI from "pixi.js";
 
 /**
  * Basic button class creates a sprite object and adds interaction callback
- * 
  * @class
  */
 export class Button extends Base {
     /**
-     * 
      * @param {string} image - image name or alias from assets already loaded
      * @param {function} onClick - call back function when clicked
      */
@@ -19,7 +17,6 @@ export class Button extends Base {
 
     /**
      * create the button object
-     * 
      * @param {string} image - image name or alias from assets already loaded
      * @param {function} onClick - call back function when clicked
      * @private
