@@ -33,6 +33,17 @@ export class CloudManager extends Base{
         this._maxScale = maxScale;
         this._clouds = [];
         this._create();
+        this._createMask();
+    }
+
+    /**
+     * create mask to hide clouds outside of the background
+     * @private
+     */
+    _createMask(){
+        this._mask = PIXI.Sprite.from("backgroundMask");
+        this._native.addChild(this._mask);
+        this._native.mask = this._mask;
     }
 
     /**

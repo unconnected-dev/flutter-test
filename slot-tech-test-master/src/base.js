@@ -1,18 +1,14 @@
 /**
- * Base class to add sin=mple getters and setters for classes that create PIXI object as this._native
- * 
+ * Base class to add getters and setters for classes that create PIXI object as this._native
  * @class
  */
 export class Base {
-    /**
-     * 
-     */
     constructor() {
         this._native = null;
     }    
 
     /**
-     * set the x parameter on the natiove pixi object
+     * Set the x parameter on the native pixi object
      * @member
      */
     get x() {
@@ -23,7 +19,7 @@ export class Base {
     }
     
     /**
-     * set the y parameter on the natiove pixi object
+     * Set the y parameter on the native pixi object
      * @member
      */
     get y() {
@@ -34,23 +30,25 @@ export class Base {
     }
 
     /**
-     * get the scale x parameter on the native pixi object
+     * Get the scale x parameter on the native pixi object
      * @member
+     * @readonly
      */
     get scaleX(){
         return this._native.scale._x;
     }
     
     /**
-     * get the scale y parameter on the native pixi object
+     * Get the scale y parameter on the native pixi object
      * @member
+     * @readyonly
      */
     get scaleY(){
         return this._native.scale._y;
     }
 
     /**
-     * get the base pixi object
+     * Get the base pixi object
      * @member
      * @readonly
      */

@@ -10,8 +10,8 @@ import { renderer } from "../renderer.js";
  */
 export class Reel extends Base {
     /**
-     * @param {number} numberOfSymbols - number of symbols in view on the reel
-     * @param {number} symbolHeight - height of each symbol
+     * @param {number}  numberOfSymbols - Number of symbols in view on the reel
+     * @param {number}  symbolHeight    - Height of each symbol
      */
     constructor(numberOfSymbols, symbolHeight) {
         super();
@@ -21,6 +21,25 @@ export class Reel extends Base {
         this._spinning = false;
         this._spinningSpeed = 0;
         this._create();
+    }
+
+    /**
+     * Create the reel using PIXI container and initial symbols
+     * @private
+     */
+    _create() {
+        this._native = new PIXI.Container("reel");
+        const totalHeight = this._symbolHeight * (this._symbolsInView);
+        //+2 symbols for before and after to hide creation and removal of symbols
+        for (let i = 0; i < this._symbolsInView + 2; i++) { 
+            const symbol = symbolStore.getRandomSymbol();
+            symbol.y = totalHeight - (i * this._symbolHeight);
+            this._native.addChild(symbol.native);
+            this._symbols.unshift(symbol);
+        }
+        renderer.app.ticker.add(() => {
+            this._update(renderer.app.ticker.elapsedMS);
+        });
     }
 
     /**
@@ -50,57 +69,6 @@ export class Reel extends Base {
     }
 
     /**
-     * Tween reels to the final position and respone promise from stopSpin()
-     * @async
-     */
-    async stop() {
-        await Tween.fromTo(this._native, 750, {y: 0, ease: Easings.Back.easeOut}, {y: this._symbolHeight}).startPromise();
-        this._native.y = 0;
-        const symbol = this._symbols.pop();
-        symbolStore.returnSymbol(symbol);
-        this._repositionSymbols();
-        this._resolve();
-    }
-
-    /**
-     * reset all symbols to the correct positions
-     */
-    _repositionSymbols() {
-        const paddingTop = this._symbols.length === this._symbolsInView + 2 ? 1 : 2;
-        this._symbols.forEach((symbol, index) => symbol.y = (this._symbolHeight*index) - (this._symbolHeight*paddingTop));
-    }
-
-    /**
-     * Create the reel using PIXI container and initial symbols
-     * @private
-     */
-    _create() {
-        this._native = new PIXI.Container("reel");
-        const totalHeight = this._symbolHeight * (this._symbolsInView);
-        for (let i = 0; i < this._symbolsInView + 2; i++) { // adding symbol before and after to hide creation and removal of symbols
-            const symbol = symbolStore.getRandomSymbol();
-            symbol.y = totalHeight - (i * this._symbolHeight);
-            this._native.addChild(symbol.native);
-            this._symbols.unshift(symbol);
-        }
-        renderer.app.ticker.add(() => {
-            this._update(renderer.app.ticker.elapsedMS);
-        });
-    }
-
-    /**
-     * create the next symbol to spin through te appature either random or a specific id
-     * @param {number} [symbolId=null] - Symbol id to generate
-     * @private
-     */
-    _createNextSymbol(symbolId=null) {
-        const symbol = symbolId === null ? symbolStore.getRandomSymbol() : symbolStore.getSymbol(symbolId);
-        symbol.y = this._symbols[0].native.y-this._symbolHeight;
-        this._native.addChild(symbol.native);
-        this._symbols.unshift(symbol);
-    }
-
-    /**
      * Update called each frame
      * @async
      * @private 
@@ -124,5 +92,45 @@ export class Reel extends Base {
                 this.stop();
             }
         }
+    }
+        
+    /**
+     * Tween reels to the final position and respone promise from stopSpin()
+     * @async
+     */
+    async stop() {
+        await Tween.fromTo(this._native, 750, {y: 0, ease: Easings.Back.easeOut}, {y: this._symbolHeight}).startPromise();
+        this._native.y = 0;
+        const symbol = this._symbols.pop();
+        symbolStore.returnSymbol(symbol);
+        this._repositionSymbols();
+        this._resolve();
+    }
+
+    /**
+     * Create the next symbol to spin through te appature either random or a specific id
+     * @param {number} [symbolId=null] - Symbol id to generate
+     * @private
+     */
+    _createNextSymbol(symbolId=null) {
+        const symbol = symbolId === null ? symbolStore.getRandomSymbol() : symbolStore.getSymbol(symbolId);
+        symbol.y = this._symbols[0].native.y-this._symbolHeight;
+        this._native.addChild(symbol.native);
+        this._symbols.unshift(symbol);
+    }
+
+    /**
+     * Reset all symbols to the correct positions
+     */
+    _repositionSymbols() {
+        const paddingTop = this._symbols.length === this._symbolsInView + 2 ? 1 : 2;
+        this._symbols.forEach((symbol, index) => symbol.y = (this._symbolHeight*index) - (this._symbolHeight*paddingTop));
+    }
+
+    /**
+     * Get symbols names
+     */
+    get symbolsByName(){
+        return [this._symbols[1]._name, this._symbols[2]._name, this._symbols[3]._name];
     }
 }

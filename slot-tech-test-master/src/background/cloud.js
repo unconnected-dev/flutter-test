@@ -72,8 +72,6 @@ export class Cloud extends Base {
         this.x += (this._speed * this._scale);
         
         //Wrap clouds to other side of screen
-        //Based off 1920x1020 screen size
-        //Would need to do a mask
         let bleed = 100;
         if(this.x > 1024 + bleed + this._native.width/2){
             this.x = 0 - bleed - this._native.width/2;

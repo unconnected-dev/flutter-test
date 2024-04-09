@@ -8,8 +8,8 @@ import { Base } from "../base.js";
  */
 export class Symbol extends Base {
     /**
-     * @param {number} id - id used for the symbols
-     * @param {string} name - name of the symbol asset
+     * @param {number}  id      - Id used for the symbols
+     * @param {string}  name    - Name of the symbol asset
      */
     constructor(id, name) {
         super();
@@ -17,12 +17,16 @@ export class Symbol extends Base {
     }
 
     /**
-     * Get the id of the symbol
-     * @member
-     * @readonly
+     * Create the Symbol using base PIXI objects and loaded animations
+     * @param {number}  id      - Id used for the symbols
+     * @param {string}  name    - Name of the symbol asset
+     * @private
      */
-    get id() {
-        return this._id;
+    _create(id, name) {
+        this._id = id;
+        this._name = name;
+        const animations = PIXI.Assets.cache.get(this._name).data.animations;
+        this._native = PIXI.AnimatedSprite.fromFrames(animations[`${this._name}Win`]);
     }
 
     /**
@@ -47,15 +51,11 @@ export class Symbol extends Base {
     }
 
     /**
-     * create the Symbol using base PIXI objects and loaded animations
-     * @param {number} id - id used for the symbols
-     * @param {string} name - name of the symbol asset
-     * @private
+     * Get the id of the symbol
+     * @member
+     * @readonly
      */
-    _create(id, name) {
-        this._id = id;
-        this._name = name;
-        const animations = PIXI.Assets.cache.get(this._name).data.animations;
-        this._native = PIXI.AnimatedSprite.fromFrames(animations[`${this._name}Win`]);
+    get id() {
+        return this._id;
     }
 }

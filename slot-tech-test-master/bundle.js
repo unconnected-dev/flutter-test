@@ -36179,20 +36179,16 @@ void main(void)\r
   const assetLoader = new AssetLoader();
 
   /**
-   * Base class to add sin=mple getters and setters for classes that create PIXI object as this._native
-   * 
+   * Base class to add getters and setters for classes that create PIXI object as this._native
    * @class
    */
   class Base {
-      /**
-       * 
-       */
       constructor() {
           this._native = null;
       }    
 
       /**
-       * set the x parameter on the natiove pixi object
+       * Set the x parameter on the native pixi object
        * @member
        */
       get x() {
@@ -36203,7 +36199,7 @@ void main(void)\r
       }
       
       /**
-       * set the y parameter on the natiove pixi object
+       * Set the y parameter on the native pixi object
        * @member
        */
       get y() {
@@ -36214,23 +36210,25 @@ void main(void)\r
       }
 
       /**
-       * get the scale x parameter on the native pixi object
+       * Get the scale x parameter on the native pixi object
        * @member
+       * @readonly
        */
       get scaleX(){
           return this._native.scale._x;
       }
       
       /**
-       * get the scale y parameter on the native pixi object
+       * Get the scale y parameter on the native pixi object
        * @member
+       * @readyonly
        */
       get scaleY(){
           return this._native.scale._y;
       }
 
       /**
-       * get the base pixi object
+       * Get the base pixi object
        * @member
        * @readonly
        */
@@ -36246,8 +36244,8 @@ void main(void)\r
    */
   let Symbol$1 = class Symbol extends Base {
       /**
-       * @param {number} id - id used for the symbols
-       * @param {string} name - name of the symbol asset
+       * @param {number}  id      - Id used for the symbols
+       * @param {string}  name    - Name of the symbol asset
        */
       constructor(id, name) {
           super();
@@ -36255,12 +36253,16 @@ void main(void)\r
       }
 
       /**
-       * Get the id of the symbol
-       * @member
-       * @readonly
+       * Create the Symbol using base PIXI objects and loaded animations
+       * @param {number}  id      - Id used for the symbols
+       * @param {string}  name    - Name of the symbol asset
+       * @private
        */
-      get id() {
-          return this._id;
+      _create(id, name) {
+          this._id = id;
+          this._name = name;
+          const animations = Assets.cache.get(this._name).data.animations;
+          this._native = AnimatedSprite.fromFrames(animations[`${this._name}Win`]);
       }
 
       /**
@@ -36285,16 +36287,12 @@ void main(void)\r
       }
 
       /**
-       * create the Symbol using base PIXI objects and loaded animations
-       * @param {number} id - id used for the symbols
-       * @param {string} name - name of the symbol asset
-       * @private
+       * Get the id of the symbol
+       * @member
+       * @readonly
        */
-      _create(id, name) {
-          this._id = id;
-          this._name = name;
-          const animations = Assets.cache.get(this._name).data.animations;
-          this._native = AnimatedSprite.fromFrames(animations[`${this._name}Win`]);
+      get id() {
+          return this._id;
       }
   };
 
@@ -36438,8 +36436,8 @@ void main(void)\r
    */
   class Reel extends Base {
       /**
-       * @param {number} numberOfSymbols - number of symbols in view on the reel
-       * @param {number} symbolHeight - height of each symbol
+       * @param {number}  numberOfSymbols - Number of symbols in view on the reel
+       * @param {number}  symbolHeight    - Height of each symbol
        */
       constructor(numberOfSymbols, symbolHeight) {
           super();
@@ -36449,6 +36447,25 @@ void main(void)\r
           this._spinning = false;
           this._spinningSpeed = 0;
           this._create();
+      }
+
+      /**
+       * Create the reel using PIXI container and initial symbols
+       * @private
+       */
+      _create() {
+          this._native = new Container("reel");
+          const totalHeight = this._symbolHeight * (this._symbolsInView);
+          //+2 symbols for before and after to hide creation and removal of symbols
+          for (let i = 0; i < this._symbolsInView + 2; i++) { 
+              const symbol = symbolStore.getRandomSymbol();
+              symbol.y = totalHeight - (i * this._symbolHeight);
+              this._native.addChild(symbol.native);
+              this._symbols.unshift(symbol);
+          }
+          renderer.app.ticker.add(() => {
+              this._update(renderer.app.ticker.elapsedMS);
+          });
       }
 
       /**
@@ -36478,57 +36495,6 @@ void main(void)\r
       }
 
       /**
-       * Tween reels to the final position and respone promise from stopSpin()
-       * @async
-       */
-      async stop() {
-          await Tween.fromTo(this._native, 750, {y: 0, ease: Easings.Back.easeOut}, {y: this._symbolHeight}).startPromise();
-          this._native.y = 0;
-          const symbol = this._symbols.pop();
-          symbolStore.returnSymbol(symbol);
-          this._repositionSymbols();
-          this._resolve();
-      }
-
-      /**
-       * reset all symbols to the correct positions
-       */
-      _repositionSymbols() {
-          const paddingTop = this._symbols.length === this._symbolsInView + 2 ? 1 : 2;
-          this._symbols.forEach((symbol, index) => symbol.y = (this._symbolHeight*index) - (this._symbolHeight*paddingTop));
-      }
-
-      /**
-       * Create the reel using PIXI container and initial symbols
-       * @private
-       */
-      _create() {
-          this._native = new Container("reel");
-          const totalHeight = this._symbolHeight * (this._symbolsInView);
-          for (let i = 0; i < this._symbolsInView + 2; i++) { // adding symbol before and after to hide creation and removal of symbols
-              const symbol = symbolStore.getRandomSymbol();
-              symbol.y = totalHeight - (i * this._symbolHeight);
-              this._native.addChild(symbol.native);
-              this._symbols.unshift(symbol);
-          }
-          renderer.app.ticker.add(() => {
-              this._update(renderer.app.ticker.elapsedMS);
-          });
-      }
-
-      /**
-       * create the next symbol to spin through te appature either random or a specific id
-       * @param {number} [symbolId=null] - Symbol id to generate
-       * @private
-       */
-      _createNextSymbol(symbolId=null) {
-          const symbol = symbolId === null ? symbolStore.getRandomSymbol() : symbolStore.getSymbol(symbolId);
-          symbol.y = this._symbols[0].native.y-this._symbolHeight;
-          this._native.addChild(symbol.native);
-          this._symbols.unshift(symbol);
-      }
-
-      /**
        * Update called each frame
        * @async
        * @private 
@@ -36552,6 +36518,46 @@ void main(void)\r
                   this.stop();
               }
           }
+      }
+          
+      /**
+       * Tween reels to the final position and respone promise from stopSpin()
+       * @async
+       */
+      async stop() {
+          await Tween.fromTo(this._native, 750, {y: 0, ease: Easings.Back.easeOut}, {y: this._symbolHeight}).startPromise();
+          this._native.y = 0;
+          const symbol = this._symbols.pop();
+          symbolStore.returnSymbol(symbol);
+          this._repositionSymbols();
+          this._resolve();
+      }
+
+      /**
+       * Create the next symbol to spin through te appature either random or a specific id
+       * @param {number} [symbolId=null] - Symbol id to generate
+       * @private
+       */
+      _createNextSymbol(symbolId=null) {
+          const symbol = symbolId === null ? symbolStore.getRandomSymbol() : symbolStore.getSymbol(symbolId);
+          symbol.y = this._symbols[0].native.y-this._symbolHeight;
+          this._native.addChild(symbol.native);
+          this._symbols.unshift(symbol);
+      }
+
+      /**
+       * Reset all symbols to the correct positions
+       */
+      _repositionSymbols() {
+          const paddingTop = this._symbols.length === this._symbolsInView + 2 ? 1 : 2;
+          this._symbols.forEach((symbol, index) => symbol.y = (this._symbolHeight*index) - (this._symbolHeight*paddingTop));
+      }
+
+      /**
+       * Get symbols names
+       */
+      get symbolsByName(){
+          return [this._symbols[1]._name, this._symbols[2]._name, this._symbols[3]._name];
       }
   }
 
@@ -36650,15 +36656,16 @@ void main(void)\r
   const timerManager = new TimerManager();
 
   /**
-   * Reel manager controls multipler reels 
+   * Reel manager controls multipler reels to start / stop spinning
+   * After spinning the reels will be checked to find win conditions
    * @class
    */
   class ReelManager extends Base {
       /**
-       * @param {number} numberOfReels - number of reel instanses to create
-       * @param {number} symbolsPerReel - number of reels in view for each reel created
-       * @param {number} reelWidth - width of each reel to position created reels correctly
-       * @param {number} symbolHeight - height of each symbol
+       * @param {number}  numberOfReels   - Number of reel instances to create
+       * @param {number}  symbolsPerReel  - Number of reels in view for each reel created
+       * @param {number}  reelWidth       - Width of each reel to position created reels correctly
+       * @param {number}  symbolHeight    - Height of each symbol
        */
       constructor(numberOfReels, symbolsPerReel, reelWidth, symbolHeight) {
           super();
@@ -36668,40 +36675,6 @@ void main(void)\r
           this._symbolHeight = symbolHeight;
           this._reels = [];
           this._create();
-      }
-
-      /**
-       * Start the reels spinning called when button is clicked
-       */
-      startSpin() {
-          if (this._spinning) {
-              return;
-          }
-          this._spinning = true;
-          this._reels.forEach(reel => {
-              reel.startSpin();
-          });
-         
-      }
-
-      /**
-       * Stop the reels spinning
-       * @async
-       */
-      async stopSpin() {
-          if (!this._spinning) {
-              return;
-          }
-          this._promises = [];
-          this._promises.push(this._reels[0].stopSpin());
-          await timerManager.startTimer(250);
-          this._promises.push(this._reels[1].stopSpin());
-          await timerManager.startTimer(250);
-          this._promises.push(this._reels[2].stopSpin());
-          
-          await Promise.all(this._promises);
-          
-          this._spinning = false;
       }
 
       /**
@@ -36717,7 +36690,7 @@ void main(void)\r
       }
 
       /**
-       * create reel mask to hide padding (out of view) symbols
+       * Create reel mask to hide padding (out of view) symbols
        * @private
        */
       _createMask() {
@@ -36741,6 +36714,95 @@ void main(void)\r
               this._reels.push(reel);
           }
       }
+
+      /**
+       * Start the reels spinning called when button is clicked
+       */
+      startSpin() {
+          if (this._spinning) {
+              return;
+          }
+          this._spinning = true;
+          this._reels.forEach(reel => {
+              reel.startSpin();
+          });
+      }
+
+      /**
+       * Stop the reels spinning sequentially
+       * @async
+       */
+      async stopSpin() {
+          if (!this._spinning) {
+              return;
+          }
+          this._promises = [];
+          this._promises.push(this._reels[0].stopSpin());
+          await timerManager.startTimer(250);
+          this._promises.push(this._reels[1].stopSpin());
+          await timerManager.startTimer(250);
+          this._promises.push(this._reels[2].stopSpin());
+          
+          await Promise.all(this._promises);
+          
+          await this._checkReels();
+
+          this._spinning = false;
+      }
+
+      /**
+       * Check the reel symbols after they have stopped spinning
+       * symbolsByName returns 3 symbol._name instead of the total 5 symbol objects
+       * @private
+       */
+      async _checkReels() {
+          const reelSymbols = [];
+          this._reels.forEach(function(reel){
+              reelSymbols.push(reel.symbolsByName);
+          });
+
+          //Get the symbols that can match from the first reel as a set
+          const symbolsSet = new Set([...reelSymbols[0]]);
+
+          //symbolMap map will be used to store any grouping of symbols that occur as symbol: [indexes]
+          //These will then be used to on the relevent reel symbols
+          const symbolMap = new Map();
+          symbolsSet.forEach(function(symbol){
+              const index = reelSymbols[0].indexOf(symbol);
+              symbolMap.set(symbol, [index]);
+          });
+
+          //Iterate through next two arrays
+          for(let i = 1; i < reelSymbols.length; i++){
+              const aReel = reelSymbols[i];
+
+              symbolsSet.forEach(function(symbol){
+                  if(!aReel.includes(symbol)){
+                      symbolsSet.delete(symbol);
+                  }
+                  else {
+                      //Get the index of the first occurrence of symbol in the reel and push to the array
+                      const index = aReel.indexOf(symbol);
+                      symbolMap.get(symbol).push(index);
+                  }
+              });
+          }
+
+          //Remove any symbols that are not in all 3 reels
+          for (const [key, value] of symbolMap.entries()) {
+              if(value.length < 3) 
+                  symbolMap.delete(key);
+          }
+          for (const [key, value] of symbolMap.entries()) {
+              console.log(`winner:`);
+              console.log(`key: ${key}, value: ${value}`);
+          }
+
+      }
+
+
+
+
   }
 
   /**
@@ -36845,8 +36907,6 @@ void main(void)\r
           this.x += (this._speed * this._scale);
           
           //Wrap clouds to other side of screen
-          //Based off 1920x1020 screen size
-          //Would need to do a mask
           let bleed = 100;
           if(this.x > 1024 + bleed + this._native.width/2){
               this.x = 0 - bleed - this._native.width/2;
@@ -36896,6 +36956,17 @@ void main(void)\r
           this._maxScale = maxScale;
           this._clouds = [];
           this._create();
+          this._createMask();
+      }
+
+      /**
+       * create mask to hide clouds outside of the background
+       * @private
+       */
+      _createMask(){
+          this._mask = Sprite.from("backgroundMask");
+          this._native.addChild(this._mask);
+          this._native.mask = this._mask;
       }
 
       /**
@@ -37005,6 +37076,7 @@ void main(void)\r
        */
       async loadAssets() {
           assetLoader.addToQueue({ alias: 'background', src: "./resource/@2x/gameBG_opt.png"});
+          assetLoader.addToQueue({ alias: 'backgroundMask', src: "./resource/@2x/gameBGMask_opt.png"});
           assetLoader.addToQueue({ alias: 'cloud1', src: "./resource/@2x/cloud1_opt.png"});
           assetLoader.addToQueue({ alias: 'cloud2', src: "./resource/@2x/cloud2_opt.png"});
           assetLoader.addToQueue({ alias: 'mask', src: "./resource/@2x/mask_opt.jpg"});

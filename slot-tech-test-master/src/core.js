@@ -22,6 +22,7 @@ class Core {
      */
     async loadAssets() {
         assetLoader.addToQueue({ alias: 'background', src: "./resource/@2x/gameBG_opt.png"});
+        assetLoader.addToQueue({ alias: 'backgroundMask', src: "./resource/@2x/gameBGMask_opt.png"});
         assetLoader.addToQueue({ alias: 'cloud1', src: "./resource/@2x/cloud1_opt.png"});
         assetLoader.addToQueue({ alias: 'cloud2', src: "./resource/@2x/cloud2_opt.png"});
         assetLoader.addToQueue({ alias: 'mask', src: "./resource/@2x/mask_opt.jpg"});
