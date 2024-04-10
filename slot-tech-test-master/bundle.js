@@ -36452,6 +36452,7 @@ void main(void)\r
           this._spinning = false;
           this._spinningSpeed = 0;
           this._create();
+          this._activeTween = [...Array(5)];
       }
 
       /**
@@ -36562,8 +36563,39 @@ void main(void)\r
       /**
        * Show winning symbols
        */
-      async showWinners(winningIndex){
-         await Tween.fromTo(this._symbols[winningIndex].native.scale, 1000, {x:0.5, y:0.5}, {x: 1, y: 1, yoyo: true, ease: Easings.Elastic.easeOut}).startPromise();
+      showWinners(winningIndex){
+          this._activeTween[winningIndex] = Tween.fromTo(this._symbols[winningIndex].native.scale, 500, {x:0.5, y:0.5}, {x: 1, y: 1, repeat: -1, yoyo: true, ease: Easings.Elastic.ease});
+          this._activeTween[winningIndex]; 
+      }
+
+      stopWinners(winningIndex){
+          this._activeTween[winningIndex].kill();
+          // Tween.fromTo(
+          //     this._symbols[winningIndex].native.scale,
+          //     500,
+          //     { x: this._symbols[winningIndex].native.scale.x, y: this._symbols[winningIndex].native.scale.y },
+          //     { x: 1, y: 1, ease: Easings.Elastic.ease }
+          // );
+       
+          
+          let currentScaleX = this._symbols[winningIndex].native.scale.x;
+          let currentScaleY = this._symbols[winningIndex].native.scale.y;
+
+          Tween.fromTo(
+              this._symbols[winningIndex].native.scale,
+              500,
+              { x: currentScaleX, y: currentScaleY },
+              { x: 1.3, y: 1.3, ease: Easings.Elastic.ease, onComplete: () => {
+
+                  //Back to original scale
+                  Tween.fromTo(
+                      this._symbols[winningIndex].native.scale,
+                      250,
+                      { x: 1.3, y: 1.3 },
+                      { x: 1, y: 1, ease: Easings.Elastic.easeOut }
+                  );
+              }}
+          );
       }
 
       /**
@@ -36816,12 +36848,23 @@ void main(void)\r
               //the 2 extra are at the start and end of the array
               let i = 0;
               for(const ind of value){
-                  await this._reels[i].showWinners(ind+1);
+                  this._reels[i].showWinners(ind+1);
+                  i++;
+                  await timerManager.startTimer(1000);
+              }
+          }
+
+          await timerManager.startTimer(1000);
+
+          //Stop winning symbols
+          for (const [key, value] of symbolMap.entries()) {
+              let i = 0;
+              for(const ind of value){
+                  this._reels[i].stopWinners(ind+1);
                   i++;
               }
           }
       }
-
 
   }
 

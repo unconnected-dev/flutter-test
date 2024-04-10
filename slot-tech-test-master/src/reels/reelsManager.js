@@ -151,11 +151,22 @@ export class ReelManager extends Base {
             //the 2 extra are at the start and end of the array
             let i = 0;
             for(const ind of value){
-                await this._reels[i].showWinners(ind+1);
+                this._reels[i].showWinners(ind+1);
+                i++;
+                await timerManager.startTimer(1000);
+            }
+        }
+
+        await timerManager.startTimer(1000);
+
+        //Stop winning symbols
+        for (const [key, value] of symbolMap.entries()) {
+            let i = 0;
+            for(const ind of value){
+                this._reels[i].stopWinners(ind+1);
                 i++;
             }
         }
     }
-
 
 }

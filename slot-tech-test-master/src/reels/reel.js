@@ -21,6 +21,8 @@ export class Reel extends Base {
         this._spinning = false;
         this._spinningSpeed = 0;
         this._create();
+        //Using winningIndex means numbers 1-3 so we have 0 just undefined
+        this._activeTween = [...Array(4)];
     }
 
     /**
@@ -129,10 +131,41 @@ export class Reel extends Base {
     }
 
     /**
-     * Show winning symbols
+     * Show winning symbols tween
+     * This will do a slow pulse
+     * @param {number} winningIndex 
      */
-    async showWinners(winningIndex){
-       await Tween.fromTo(this._symbols[winningIndex].native.scale, 1000, {x:0.5, y:0.5}, {x: 1, y: 1, yoyo: true, ease: Easings.Elastic.easeOut}).startPromise();
+    showWinners(winningIndex){
+        this._activeTween[winningIndex] = Tween.fromTo(this._symbols[winningIndex].native.scale, 500, {x:0.5, y:0.5}, {x: 1, y: 1, repeat: -1, yoyo: true, ease: Easings.Elastic.ease});
+        this._activeTween[winningIndex]; 
+    }
+
+    /**
+     * Stop winning symbols tween
+     * This will stop current pulse, scale up to 1.3, scale back to 1
+     * @param {number} winningIndex 
+     */
+    stopWinners(winningIndex){
+        this._activeTween[winningIndex].kill();
+        
+        let currentScaleX = this._symbols[winningIndex].native.scale.x;
+        let currentScaleY = this._symbols[winningIndex].native.scale.y;
+
+        Tween.fromTo(
+            this._symbols[winningIndex].native.scale,
+            500,
+            { x: currentScaleX, y: currentScaleY },
+            { x: 1.3, y: 1.3, ease: Easings.Elastic.ease, onComplete: () => {
+
+                //Back to original scale
+                Tween.fromTo(
+                    this._symbols[winningIndex].native.scale,
+                    250,
+                    { x: 1.3, y: 1.3 },
+                    { x: 1, y: 1, ease: Easings.Elastic.easeOut }
+                );
+            }}
+        );
     }
 
     /**
