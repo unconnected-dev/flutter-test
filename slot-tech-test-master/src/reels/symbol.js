@@ -27,6 +27,9 @@ export class Symbol extends Base {
         this._name = name;
         const animations = PIXI.Assets.cache.get(this._name).data.animations;
         this._native = PIXI.AnimatedSprite.fromFrames(animations[`${this._name}Win`]);
+        this._native.anchor.set(0.5);
+        this._native.x += this._native.width/2;
+        this._native.y += this._native.height/2;
     }
 
     /**
@@ -46,8 +49,10 @@ export class Symbol extends Base {
     //Reset the symbol and remove from parent object
     reset(){
         this._native.parent.removeChild(this._native);       
-        this._native.x = 0;
-        this._native.y = 0;
+        // this._native.x = 0;
+        // this._native.y = 0;
+        this._native.x = this._native.width/2;
+        this._native.y = this._native.height/2;
     }
 
     /**

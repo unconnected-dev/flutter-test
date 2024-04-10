@@ -121,10 +121,18 @@ export class Reel extends Base {
 
     /**
      * Reset all symbols to the correct positions
+     * @private
      */
     _repositionSymbols() {
         const paddingTop = this._symbols.length === this._symbolsInView + 2 ? 1 : 2;
         this._symbols.forEach((symbol, index) => symbol.y = (this._symbolHeight*index) - (this._symbolHeight*paddingTop));
+    }
+
+    /**
+     * Show winning symbols
+     */
+    async showWinners(winningIndex){
+       await Tween.fromTo(this._symbols[winningIndex].native.scale, 1000, {x:0.5, y:0.5}, {x: 1, y: 1, yoyo: true, ease: Easings.Elastic.easeOut}).startPromise();
     }
 
     /**

@@ -36263,6 +36263,9 @@ void main(void)\r
           this._name = name;
           const animations = Assets.cache.get(this._name).data.animations;
           this._native = AnimatedSprite.fromFrames(animations[`${this._name}Win`]);
+          this._native.anchor.set(0.5);
+          this._native.x += this._native.width/2;
+          this._native.y += this._native.height/2;
       }
 
       /**
@@ -36282,8 +36285,10 @@ void main(void)\r
       //Reset the symbol and remove from parent object
       reset(){
           this._native.parent.removeChild(this._native);       
-          this._native.x = 0;
-          this._native.y = 0;
+          // this._native.x = 0;
+          // this._native.y = 0;
+          this._native.x = this._native.width/2;
+          this._native.y = this._native.height/2;
       }
 
       /**
@@ -36547,10 +36552,18 @@ void main(void)\r
 
       /**
        * Reset all symbols to the correct positions
+       * @private
        */
       _repositionSymbols() {
           const paddingTop = this._symbols.length === this._symbolsInView + 2 ? 1 : 2;
           this._symbols.forEach((symbol, index) => symbol.y = (this._symbolHeight*index) - (this._symbolHeight*paddingTop));
+      }
+
+      /**
+       * Show winning symbols
+       */
+      async showWinners(winningIndex){
+         await Tween.fromTo(this._symbols[winningIndex].native.scale, 1000, {x:0.5, y:0.5}, {x: 1, y: 1, yoyo: true, ease: Easings.Elastic.easeOut}).startPromise();
       }
 
       /**
@@ -36684,7 +36697,8 @@ void main(void)\r
       _create() {
           this._native = new Container("reelManager");
           this._native.x = 314;
-          this._native.y = 80;
+          // this._native.y = 80;
+          this._native.y = 156;
           this._createMask();
           this._createReels();
       }
@@ -36695,7 +36709,7 @@ void main(void)\r
        */
       _createMask() {
           this._mask = Sprite.from("mask");
-          this._mask.y = 23;
+          this._mask.y = -46;
           this._mask.scale.x = 2.3;
           this._mask.scale.y = 2.7;
           this._native.addChild(this._mask);
@@ -36793,14 +36807,20 @@ void main(void)\r
               if(value.length < 3) 
                   symbolMap.delete(key);
           }
+
+          //Show winning symbols
           for (const [key, value] of symbolMap.entries()) {
-              console.log(`winner:`);
-              console.log(`key: ${key}, value: ${value}`);
+              console.log(`winner`);
+              //Pass the index of each winning sprite
+              //+1 is used because the reel array has 5 symbols total
+              //the 2 extra are at the start and end of the array
+              let i = 0;
+              for(const ind of value){
+                  await this._reels[i].showWinners(ind+1);
+                  i++;
+              }
           }
-
       }
-
-
 
 
   }

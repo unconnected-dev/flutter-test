@@ -32,7 +32,8 @@ export class ReelManager extends Base {
     _create() {
         this._native = new PIXI.Container("reelManager");
         this._native.x = 314;
-        this._native.y = 80;
+        // this._native.y = 80;
+        this._native.y = 156;
         this._createMask();
         this._createReels();
     }
@@ -43,7 +44,7 @@ export class ReelManager extends Base {
      */
     _createMask() {
         this._mask = PIXI.Sprite.from("mask");
-        this._mask.y = 23;
+        this._mask.y = -46;
         this._mask.scale.x = 2.3;
         this._mask.scale.y = 2.7;
         this._native.addChild(this._mask);
@@ -142,11 +143,17 @@ export class ReelManager extends Base {
                 symbolMap.delete(key);
         }
 
-
-        //Show winning symbols in console
+        //Show winning symbols
         for (const [key, value] of symbolMap.entries()) {
-            console.log(`winner:`)
-            console.log(`key: ${key}, value: ${value}`)
+            console.log(`winner`);
+            //Pass the index of each winning sprite
+            //+1 is used because the reel array has 5 symbols total
+            //the 2 extra are at the start and end of the array
+            let i = 0;
+            for(const ind of value){
+                await this._reels[i].showWinners(ind+1);
+                i++;
+            }
         }
     }
 
