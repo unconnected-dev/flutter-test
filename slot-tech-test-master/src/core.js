@@ -7,6 +7,8 @@ import { timerManager } from "./utils/timermanager.js";
 import { Button } from "./button.js";
 import { CloudManager } from "./background/cloudManager.js";
 import { States } from "./states.js";
+import { Panel } from "./panel/panel.js";
+import { BalancePanel } from "./panel/balancePanel.js";
 
 /**
  * Base entry point for the game
@@ -84,15 +86,15 @@ class Core {
         renderer.addChild(this._cloudManager.native);
 
         symbolStore.createSymbols([
-            {id: 0, name: "h2"},
-            {id: 1, name: "h3"},
-            {id: 2, name: "h4"},
-            {id: 3, name: "ace"},
-            {id: 4, name: "king"},
-            {id: 5, name: "queen"},
-            {id: 6, name: "jack"},
-            {id: 7, name: "ten"},
-            {id: 8, name: "nine"}
+            {id: 0, name: "h2",     value: 900},
+            {id: 1, name: "h3",     value: 800},
+            {id: 2, name: "h4",     value: 700},
+            {id: 3, name: "ace",    value: 600},
+            {id: 4, name: "king",   value: 500},
+            {id: 5, name: "queen",  value: 400},
+            {id: 6, name: "jack",   value: 300},
+            {id: 7, name: "ten",    value: 200},
+            {id: 8, name: "nine",   value: 100}
         ],
         3,
         3);
@@ -126,9 +128,19 @@ class Core {
         });
 
         button.x = 475;
-        button.y = 440;
+        button.y = 460;
         renderer.addChild(button.native);
 
+        this._announcementPanel = new Panel();
+        this._announcementPanel.x = 475;
+        this._announcementPanel.y = 400;
+        renderer.addChild(this._announcementPanel.native);
+        
+        this._balancePanel = new BalancePanel();
+        this._balancePanel.x = 600;
+        this._balancePanel.y = 400;
+        renderer.addChild(this._balancePanel.native);
+        
     }
 
     /**

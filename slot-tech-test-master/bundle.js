@@ -37150,6 +37150,72 @@ void main(void)\r
   }
 
   /**
+   * Panel display shows the result of the spin
+   * @class
+   */
+  class Panel extends Base {
+      constructor(){
+          super();
+          this._create();
+      }
+
+      /**
+       * Create the panel display using PIXI container
+       * @private
+       */
+      _create(){
+          this._native = new Container("panelDisplay");
+          this._native.x = 0;
+          this._native.y = 0;
+
+          //Positioning panel to be above button
+          this._backgroundSprite = Sprite.from("greenPanel");
+          this._backgroundSprite.x = -26;
+          this._backgroundSprite.y = 24;
+
+          this._announcementText = new Text(String(``),{
+              fontFamily:  `Impact`,
+              fontVariant: `small-caps`, 
+              fontSize:    30, 
+              fill:        0x151515, 
+              align:       `center`
+          });
+          
+          this.updateText(``);
+          this.native.addChild(this._backgroundSprite,this._announcementText);
+      }
+
+      //Need to re-center text on any text update
+      updateText(text){
+          this._announcementText.text = text;
+          this._announcementText.pivot.x = this._announcementText.width / 2;
+          this._announcementText.pivot.y = this._announcementText.height / 2;
+          this._announcementText.x = this._backgroundSprite.x + this._backgroundSprite.width / 2;
+          this._announcementText.y = this._backgroundSprite.y + 16;
+      }
+  }
+
+  /**
+   * Balance panel to display the current balance
+   * @class
+   */
+  class BalancePanel extends Panel{
+      constructor(){
+          super();
+          this._balance = 500;
+          //Fire update to show initial balance of 500
+          this.updateBalance(0);
+      }
+
+      //Basic addition or subtraction can be sent through this function
+      //Error checking could be done to stay above negative
+      updateBalance(val){
+          this._balance += val;
+          this.updateText(`£${this._balance}`);
+      }
+  }
+
+  /**
    * Base entry point for the game
    * @class
    */
@@ -37225,15 +37291,15 @@ void main(void)\r
           renderer.addChild(this._cloudManager.native);
 
           symbolStore.createSymbols([
-              {id: 0, name: "h2"},
-              {id: 1, name: "h3"},
-              {id: 2, name: "h4"},
-              {id: 3, name: "ace"},
-              {id: 4, name: "king"},
-              {id: 5, name: "queen"},
-              {id: 6, name: "jack"},
-              {id: 7, name: "ten"},
-              {id: 8, name: "nine"}
+              {id: 0, name: "h2",     value: 900},
+              {id: 1, name: "h3",     value: 800},
+              {id: 2, name: "h4",     value: 700},
+              {id: 3, name: "ace",    value: 600},
+              {id: 4, name: "king",   value: 500},
+              {id: 5, name: "queen",  value: 400},
+              {id: 6, name: "jack",   value: 300},
+              {id: 7, name: "ten",    value: 200},
+              {id: 8, name: "nine",   value: 100}
           ],
           3,
           3);
@@ -37267,9 +37333,19 @@ void main(void)\r
           });
 
           button.x = 475;
-          button.y = 440;
+          button.y = 460;
           renderer.addChild(button.native);
 
+          this._announcementPanel = new Panel();
+          this._announcementPanel.x = 475;
+          this._announcementPanel.y = 400;
+          renderer.addChild(this._announcementPanel.native);
+          
+          this._balancePanel = new BalancePanel();
+          this._balancePanel.x = 600;
+          this._balancePanel.y = 400;
+          renderer.addChild(this._balancePanel.native);
+          
       }
 
       /**
