@@ -7,8 +7,8 @@ import * as PIXI from "pixi.js";
  */
 export class Button extends Base {
     /**
-     * @param {string} image - image name or alias from assets already loaded
-     * @param {function} onClick - call back function when clicked
+     * @param {string}      image   - image name or alias from assets already loaded
+     * @param {function}    onClick - call back function when clicked
      */
     constructor(image, onClick) {
         super();
@@ -26,8 +26,7 @@ export class Button extends Base {
         this._native.eventMode = 'static';
         this._native.cursor = 'pointer';
         this._native.addListener('pointerdown', () =>{
-            onClick();
+                onClick();
         });
     }
-
 }

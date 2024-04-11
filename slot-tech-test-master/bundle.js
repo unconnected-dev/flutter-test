@@ -31704,7 +31704,7 @@ void main(void)\r
 
   	}, true);
 
-  var TweenMax$1 = globals.TweenMax;
+  var TweenMax$2 = globals.TweenMax;
 
   /*!
    * VERSION: 2.1.3
@@ -35837,8 +35837,8 @@ void main(void)\r
 
 
   //the following two lines are designed to prevent tree shaking of the classes that were historically included with TweenMax (otherwise, folks would have to reference CSSPlugin, for example, to ensure their CSS-related animations worked)
-  var TweenMax = TweenMax$1;
-  TweenMax._autoActivated = [TimelineLite, TimelineMax, CSSPlugin, AttrPlugin, BezierPlugin, RoundPropsPlugin, DirectionalRotationPlugin, Back, Elastic, Bounce, RoughEase, SlowMo, SteppedEase, Circ, Expo, Sine, ExpoScaleEase];
+  var TweenMax$1 = TweenMax$2;
+  TweenMax$1._autoActivated = [TimelineLite, TimelineMax, CSSPlugin, AttrPlugin, BezierPlugin, RoundPropsPlugin, DirectionalRotationPlugin, Back, Elastic, Bounce, RoughEase, SlowMo, SteppedEase, Circ, Expo, Sine, ExpoScaleEase];
 
   /**
    * Renderer creates instance of PIXI Application and sets up events.
@@ -35905,8 +35905,8 @@ void main(void)\r
        */
       start() {
           this.browserResized();
-          TweenMax.ticker.useRAF(true);
-          TweenMax.ticker.addEventListener("tick", this._rafCalculateTimeDeltaMS, this);    
+          TweenMax$1.ticker.useRAF(true);
+          TweenMax$1.ticker.addEventListener("tick", this._rafCalculateTimeDeltaMS, this);    
       }
 
       /**
@@ -36397,7 +36397,7 @@ void main(void)\r
        * @returns {TweenMax}
        */
        static to(target, duration, vars = {}) {
-          const tween = TweenMax.to(target, duration / 1000, vars);
+          const tween = TweenMax$1.to(target, duration / 1000, vars);
           tween.startPromise = async() => {
               tween.invalidate();
               await new Promise(resolve => {
@@ -36421,7 +36421,7 @@ void main(void)\r
        * @returns {TweenMax}
        */
       static fromTo(target, duration, fromVars = {}, toVars = {}) {
-          const tween = TweenMax.fromTo(target, duration / 1000, fromVars, toVars);
+          const tween = TweenMax$1.fromTo(target, duration / 1000, fromVars, toVars);
           tween.startPromise = async() => {
               tween.invalidate();
               await new Promise(resolve => {
@@ -36452,7 +36452,8 @@ void main(void)\r
           this._spinning = false;
           this._spinningSpeed = 0;
           this._create();
-          this._activeTween = [...Array(5)];
+          //Using winningIndex means numbers 1-3 so we have 0 just undefined
+          this._activeTween = [...Array(4)];
       }
 
       /**
@@ -36482,11 +36483,15 @@ void main(void)\r
           if(this._spinning) {
               return;
           }
+          
+          this._symbols.forEach(function (symbol, index){
+              TweenMax.to(symbol.native, 0.5, {alpha: 1, ease: Easings.Elastic.ease});
+          });
+
           this._spinning = true;
           this._createNextSymbol();
-          
-          Tween.fromTo(this, 1000, {_spinningSpeed: 0, ease: Easings.Back.easeIn}, {_spinningSpeed: 10}).startPromise();
 
+          Tween.fromTo(this, 1000, {_spinningSpeed: 0, ease: Easings.Back.easeIn}, {_spinningSpeed: 10}).startPromise();
       }
 
       /**
@@ -36535,6 +36540,12 @@ void main(void)\r
           this._native.y = 0;
           const symbol = this._symbols.pop();
           symbolStore.returnSymbol(symbol);
+          
+          //Fade symbols out
+          this._symbols.forEach(function (symbol, index){
+              TweenMax.to(symbol.native, 0.5, {alpha: 0.4, ease: Easings.Elastic.ease});
+          });
+          
           this._repositionSymbols();
           this._resolve();
       }
@@ -36561,22 +36572,23 @@ void main(void)\r
       }
 
       /**
-       * Show winning symbols
+       * Show winning symbols tween
+       * This will do a slow pulse on repeat
+       * @param {number} winningIndex 
        */
       showWinners(winningIndex){
+          TweenMax.to(this._symbols[winningIndex].native, 0.5, {alpha: 1, ease: Easings.Elastic.ease});
           this._activeTween[winningIndex] = Tween.fromTo(this._symbols[winningIndex].native.scale, 500, {x:0.5, y:0.5}, {x: 1, y: 1, repeat: -1, yoyo: true, ease: Easings.Elastic.ease});
           this._activeTween[winningIndex]; 
       }
 
+      /**
+       * Stop winning symbols tween
+       * This will stop current pulse, scale up to 1.3, scale back to 1
+       * @param {number} winningIndex 
+       */
       stopWinners(winningIndex){
           this._activeTween[winningIndex].kill();
-          // Tween.fromTo(
-          //     this._symbols[winningIndex].native.scale,
-          //     500,
-          //     { x: this._symbols[winningIndex].native.scale.x, y: this._symbols[winningIndex].native.scale.y },
-          //     { x: 1, y: 1, ease: Easings.Elastic.ease }
-          // );
-       
           
           let currentScaleX = this._symbols[winningIndex].native.scale.x;
           let currentScaleY = this._symbols[winningIndex].native.scale.y;
@@ -36701,6 +36713,16 @@ void main(void)\r
   const timerManager = new TimerManager();
 
   /**
+   * States class
+   * Including states to stop button from locking up if clicked too fast
+   * @class
+   */
+  class States {
+      static SPINNING = 0;
+      static STOPPED = 1;
+  }
+
+  /**
    * Reel manager controls multipler reels to start / stop spinning
    * After spinning the reels will be checked to find win conditions
    * @class
@@ -36712,8 +36734,9 @@ void main(void)\r
        * @param {number}  reelWidth       - Width of each reel to position created reels correctly
        * @param {number}  symbolHeight    - Height of each symbol
        */
-      constructor(numberOfReels, symbolsPerReel, reelWidth, symbolHeight) {
+      constructor(core, numberOfReels, symbolsPerReel, reelWidth, symbolHeight) {
           super();
+          this._core = core;
           this._numberOfReels = numberOfReels;
           this._symbolsPerReel = symbolsPerReel;
           this._reelWidth = reelWidth;
@@ -36794,10 +36817,13 @@ void main(void)\r
           await this._checkReels();
 
           this._spinning = false;
+          //Allows button to activate the spin again
+          this._core.currentState = States.STOPPED;
       }
 
       /**
        * Check the reel symbols after they have stopped spinning
+       * Any winning symbols will be animated
        * symbolsByName returns 3 symbol._name instead of the total 5 symbol objects
        * @private
        */
@@ -36874,8 +36900,8 @@ void main(void)\r
    */
   class Button extends Base {
       /**
-       * @param {string} image - image name or alias from assets already loaded
-       * @param {function} onClick - call back function when clicked
+       * @param {string}      image   - image name or alias from assets already loaded
+       * @param {function}    onClick - call back function when clicked
        */
       constructor(image, onClick) {
           super();
@@ -36893,10 +36919,9 @@ void main(void)\r
           this._native.eventMode = 'static';
           this._native.cursor = 'pointer';
           this._native.addListener('pointerdown', () =>{
-              onClick();
+                  onClick();
           });
       }
-
   }
 
   /**
@@ -37131,6 +37156,7 @@ void main(void)\r
   class Core {
       constructor() {        
           this._create();
+          this._currentState = States.STOPPED;
       }
 
       /**
@@ -37227,19 +37253,38 @@ void main(void)\r
               }
           }
 
-          this._reelManager = new ReelManager(3, 3, 125, 105);
+          this._reelManager = new ReelManager(this, 3, 3, 125, 105);
           renderer.addChild(this._reelManager.native);
 
           const button = new Button("playActive", async() => {
-              this._reelManager.startSpin();            
-              await timerManager.startTimer(2000);
-              this._reelManager.stopSpin();    
+              
+              if(this._currentState === States.STOPPED){
+                  this._currentState = States.SPINNING;
+                  this._reelManager.startSpin();            
+                  await timerManager.startTimer(2000);
+                  this._reelManager.stopSpin();    
+              }
           });
+
           button.x = 475;
           button.y = 440;
           renderer.addChild(button.native);
 
       }
+
+      /**
+       * Get the current state of the game
+       * @member
+       * @readonly
+       */
+      get currentState() {
+          return this._currentState;
+      }
+
+      //Use class States
+      set currentState(state) {
+          this._currentState = state;
+      }    
   }
 
   window.startup = () => {

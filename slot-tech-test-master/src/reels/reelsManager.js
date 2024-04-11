@@ -2,6 +2,8 @@ import * as PIXI from "pixi.js";
 import { Reel } from "./reel.js";
 import { Base } from "../base.js";
 import { timerManager } from "../utils/timermanager.js";
+import { States } from "../states.js";
+import { Core } from "../core.js";
 
 /**
  * Reel manager controls multipler reels to start / stop spinning
@@ -15,8 +17,9 @@ export class ReelManager extends Base {
      * @param {number}  reelWidth       - Width of each reel to position created reels correctly
      * @param {number}  symbolHeight    - Height of each symbol
      */
-    constructor(numberOfReels, symbolsPerReel, reelWidth, symbolHeight) {
+    constructor(core, numberOfReels, symbolsPerReel, reelWidth, symbolHeight) {
         super();
+        this._core = core;
         this._numberOfReels = numberOfReels;
         this._symbolsPerReel = symbolsPerReel;
         this._reelWidth = reelWidth;
@@ -97,10 +100,13 @@ export class ReelManager extends Base {
         await this._checkReels();
 
         this._spinning = false;
+        //Allows button to activate the spin again
+        this._core.currentState = States.STOPPED;
     }
 
     /**
      * Check the reel symbols after they have stopped spinning
+     * Any winning symbols will be animated
      * symbolsByName returns 3 symbol._name instead of the total 5 symbol objects
      * @private
      */

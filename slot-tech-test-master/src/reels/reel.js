@@ -52,11 +52,15 @@ export class Reel extends Base {
         if(this._spinning) {
             return;
         }
+        
+        this._symbols.forEach(function (symbol, index){
+            TweenMax.to(symbol.native, 0.5, {alpha: 1, ease: Easings.Elastic.ease});
+        });
+
         this._spinning = true;
         this._createNextSymbol();
-        
-        Tween.fromTo(this, 1000, {_spinningSpeed: 0, ease: Easings.Back.easeIn}, {_spinningSpeed: 10}).startPromise();
 
+        Tween.fromTo(this, 1000, {_spinningSpeed: 0, ease: Easings.Back.easeIn}, {_spinningSpeed: 10}).startPromise();
     }
 
     /**
@@ -105,6 +109,12 @@ export class Reel extends Base {
         this._native.y = 0;
         const symbol = this._symbols.pop();
         symbolStore.returnSymbol(symbol);
+        
+        //Fade symbols out
+        this._symbols.forEach(function (symbol, index){
+            TweenMax.to(symbol.native, 0.5, {alpha: 0.4, ease: Easings.Elastic.ease});
+        });
+        
         this._repositionSymbols();
         this._resolve();
     }
@@ -132,10 +142,11 @@ export class Reel extends Base {
 
     /**
      * Show winning symbols tween
-     * This will do a slow pulse
+     * This will do a slow pulse on repeat
      * @param {number} winningIndex 
      */
     showWinners(winningIndex){
+        TweenMax.to(this._symbols[winningIndex].native, 0.5, {alpha: 1, ease: Easings.Elastic.ease});
         this._activeTween[winningIndex] = Tween.fromTo(this._symbols[winningIndex].native.scale, 500, {x:0.5, y:0.5}, {x: 1, y: 1, repeat: -1, yoyo: true, ease: Easings.Elastic.ease});
         this._activeTween[winningIndex]; 
     }

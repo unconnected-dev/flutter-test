@@ -6,6 +6,7 @@ import { ReelManager } from "./reels/reelsManager.js";
 import { timerManager } from "./utils/timermanager.js";
 import { Button } from "./button.js";
 import { CloudManager } from "./background/cloudManager.js";
+import { States } from "./states.js";
 
 /**
  * Base entry point for the game
@@ -14,6 +15,7 @@ import { CloudManager } from "./background/cloudManager.js";
 class Core {
     constructor() {        
         this._create();
+        this._currentState = States.STOPPED;
     }
 
     /**
@@ -110,19 +112,38 @@ class Core {
             }
         }
 
-        this._reelManager = new ReelManager(3, 3, 125, 105);
+        this._reelManager = new ReelManager(this, 3, 3, 125, 105);
         renderer.addChild(this._reelManager.native);
 
         const button = new Button("playActive", async() => {
-            this._reelManager.startSpin();            
-            await timerManager.startTimer(2000);
-            this._reelManager.stopSpin();    
+            
+            if(this._currentState === States.STOPPED){
+                this._currentState = States.SPINNING;
+                this._reelManager.startSpin();            
+                await timerManager.startTimer(2000);
+                this._reelManager.stopSpin();    
+            }
         });
+
         button.x = 475;
         button.y = 440;
         renderer.addChild(button.native);
 
     }
+
+    /**
+     * Get the current state of the game
+     * @member
+     * @readonly
+     */
+    get currentState() {
+        return this._currentState;
+    }
+
+    //Use class States
+    set currentState(state) {
+        this._currentState = state;
+    }    
 }
 
 window.startup = () => {
