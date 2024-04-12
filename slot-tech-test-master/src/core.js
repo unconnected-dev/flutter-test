@@ -85,7 +85,7 @@ class Core {
         this._cloudManager = new CloudManager(4, 0, 1024, 32, 64, 1, 2, 2, 6);
         renderer.addChild(this._cloudManager.native);
 
-        symbolStore.createSymbols([
+        const symbolIds = [
             {id: 0, name: "h2",     value: 900},
             {id: 1, name: "h3",     value: 800},
             {id: 2, name: "h4",     value: 700},
@@ -95,9 +95,10 @@ class Core {
             {id: 6, name: "jack",   value: 300},
             {id: 7, name: "ten",    value: 200},
             {id: 8, name: "nine",   value: 100}
-        ],
-        3,
-        3);
+        ];
+
+        symbolStore.createSymbols(symbolIds,3,3);
+        symbolStore.generateWinMap(symbolIds);
 
         const container = new PIXI.Container("reelSquares");
         container.x = 324;
@@ -121,6 +122,8 @@ class Core {
             
             if(this._currentState === States.STOPPED){
                 this._currentState = States.SPINNING;
+                this.announceResult(``);
+                this.adjustBalance(-50);
                 this._reelManager.startSpin();            
                 await timerManager.startTimer(2000);
                 this._reelManager.stopSpin();    
@@ -140,7 +143,6 @@ class Core {
         this._balancePanel.x = 600;
         this._balancePanel.y = 400;
         renderer.addChild(this._balancePanel.native);
-        
     }
 
     /**
@@ -156,6 +158,16 @@ class Core {
     set currentState(state) {
         this._currentState = state;
     }    
+
+    //Announce result
+    announceResult(str){
+        this._announcementPanel.updateText(str);
+    }
+
+    //Adjust balance, val needs to be a negative number if decreasing
+    adjustBalance(val){
+        this._balancePanel.updateBalance(val);
+    }
 }
 
 window.startup = () => {

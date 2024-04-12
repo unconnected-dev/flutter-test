@@ -28,7 +28,7 @@ export class Panel extends Base {
         this._announcementText = new PIXI.Text(String(``),{
             fontFamily:  `Impact`,
             fontVariant: `small-caps`, 
-            fontSize:    30, 
+            fontSize:    24, 
             fill:        0x151515, 
             align:       `center`
         });

@@ -35,6 +35,18 @@ class SymbolStore {
     }
 
     /**
+     * Reusing symbols object in core.js to generate a hashmap for finding the win values
+     * @param {Array.<SymbolObject>} symbolIds - Array of objects to create the symbols
+     */
+    generateWinMap(symbolIds){
+        this._winMap = new Map()
+        for(let i = 0; i < symbolIds.length; i++){
+            const {id, name, value} = symbolIds[i];  
+            this._winMap.set(name, value);
+        }
+    }
+
+    /**
      * get a random symbol from the store
      * @returns {Symbol}
      */
@@ -62,6 +74,14 @@ class SymbolStore {
     returnSymbol(symbol) {
         symbol.reset();
         this._symbols.get(symbol.id).push(symbol);
+    }
+
+    /**
+     * Get the map to check for winning value
+     * @readonly
+     */
+    get winMap(){
+        return this._winMap;
     }
 }
 

@@ -36336,6 +36336,18 @@ void main(void)\r
       }
 
       /**
+       * Reusing symbols object in core.js to generate a hashmap for finding the win values
+       * @param {Array.<SymbolObject>} symbolIds - Array of objects to create the symbols
+       */
+      generateWinMap(symbolIds){
+          this._winMap = new Map();
+          for(let i = 0; i < symbolIds.length; i++){
+              const {id, name, value} = symbolIds[i];  
+              this._winMap.set(name, value);
+          }
+      }
+
+      /**
        * get a random symbol from the store
        * @returns {Symbol}
        */
@@ -36363,6 +36375,14 @@ void main(void)\r
       returnSymbol(symbol) {
           symbol.reset();
           this._symbols.get(symbol.id).push(symbol);
+      }
+
+      /**
+       * Get the map to check for winning value
+       * @readonly
+       */
+      get winMap(){
+          return this._winMap;
       }
   }
 
@@ -36752,7 +36772,6 @@ void main(void)\r
       _create() {
           this._native = new Container("reelManager");
           this._native.x = 314;
-          // this._native.y = 80;
           this._native.y = 156;
           this._createMask();
           this._createReels();
@@ -36882,13 +36901,24 @@ void main(void)\r
 
           await timerManager.startTimer(1000);
 
+          let totalWin = 0;
+
           //Stop winning symbols
           for (const [key, value] of symbolMap.entries()) {
               let i = 0;
+              totalWin += symbolStore.winMap.get(key, 0);
               for(const ind of value){
                   this._reels[i].stopWinners(ind+1);
                   i++;
               }
+          }
+
+          if(totalWin > 0){
+              this._core.announceResult(`£${totalWin}`);
+              this._core.adjustBalance(totalWin);
+          }
+          else {
+              this._core.announceResult(`BLNT`);
           }
       }
 
@@ -37176,7 +37206,7 @@ void main(void)\r
           this._announcementText = new Text(String(``),{
               fontFamily:  `Impact`,
               fontVariant: `small-caps`, 
-              fontSize:    30, 
+              fontSize:    24, 
               fill:        0x151515, 
               align:       `center`
           });
@@ -37290,7 +37320,7 @@ void main(void)\r
           this._cloudManager = new CloudManager(4, 0, 1024, 32, 64, 1, 2, 2, 6);
           renderer.addChild(this._cloudManager.native);
 
-          symbolStore.createSymbols([
+          const symbolIds = [
               {id: 0, name: "h2",     value: 900},
               {id: 1, name: "h3",     value: 800},
               {id: 2, name: "h4",     value: 700},
@@ -37300,9 +37330,10 @@ void main(void)\r
               {id: 6, name: "jack",   value: 300},
               {id: 7, name: "ten",    value: 200},
               {id: 8, name: "nine",   value: 100}
-          ],
-          3,
-          3);
+          ];
+
+          symbolStore.createSymbols(symbolIds,3,3);
+          symbolStore.generateWinMap(symbolIds);
 
           const container = new Container("reelSquares");
           container.x = 324;
@@ -37326,6 +37357,8 @@ void main(void)\r
               
               if(this._currentState === States.STOPPED){
                   this._currentState = States.SPINNING;
+                  this.announceResult(``);
+                  this.adjustBalance(-50);
                   this._reelManager.startSpin();            
                   await timerManager.startTimer(2000);
                   this._reelManager.stopSpin();    
@@ -37345,7 +37378,6 @@ void main(void)\r
           this._balancePanel.x = 600;
           this._balancePanel.y = 400;
           renderer.addChild(this._balancePanel.native);
-          
       }
 
       /**
@@ -37361,6 +37393,16 @@ void main(void)\r
       set currentState(state) {
           this._currentState = state;
       }    
+
+      //Announce result
+      announceResult(str){
+          this._announcementPanel.updateText(str);
+      }
+
+      //Adjust balance, val needs to be a negative number if decreasing
+      adjustBalance(val){
+          this._balancePanel.updateBalance(val);
+      }
   }
 
   window.startup = () => {

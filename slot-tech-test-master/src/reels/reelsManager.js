@@ -3,7 +3,7 @@ import { Reel } from "./reel.js";
 import { Base } from "../base.js";
 import { timerManager } from "../utils/timermanager.js";
 import { States } from "../states.js";
-import { Core } from "../core.js";
+import { symbolStore } from "./symbolStore.js";
 
 /**
  * Reel manager controls multipler reels to start / stop spinning
@@ -35,7 +35,6 @@ export class ReelManager extends Base {
     _create() {
         this._native = new PIXI.Container("reelManager");
         this._native.x = 314;
-        // this._native.y = 80;
         this._native.y = 156;
         this._createMask();
         this._createReels();
@@ -165,13 +164,24 @@ export class ReelManager extends Base {
 
         await timerManager.startTimer(1000);
 
+        let totalWin = 0;
+
         //Stop winning symbols
         for (const [key, value] of symbolMap.entries()) {
             let i = 0;
+            totalWin += symbolStore.winMap.get(key, 0);
             for(const ind of value){
                 this._reels[i].stopWinners(ind+1);
                 i++;
             }
+        }
+
+        if(totalWin > 0){
+            this._core.announceResult(`£${totalWin}`);
+            this._core.adjustBalance(totalWin);
+        }
+        else{
+            this._core.announceResult(`BLNT`);
         }
     }
 
